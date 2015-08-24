@@ -1,6 +1,7 @@
 // days.js
 var express = require("express");
 var router = express.Router();
+var Day = require("../../models/day");
 
 
 
@@ -14,15 +15,28 @@ router.get("/:day_id", function(req, res) {
 });
 
 router.post("/newday", function(req, res) {
-	// save current day
-	console.log(req.body);
-	res.send("New day posted");
+	var day = new Day(req.body);
+	day.save()
+		.then(function (newDay) {
+			res.json(newDay);
+		})
+		.then(null, function (error) {
+			res.status(500);
+			res.json(error);
+		});
 });
 
 router.delete("/:day_id", function(req, res) {
 	// delete day
 	var day_id = req.params.day_id;
-	res.send();
+	Day.remove({_id: day_id})
+		.then(function () {
+			res.json({});
+		})
+		.then(null, function (error) {
+			res.status(500);
+			res.json(error);
+		});
 });
 
 router.post("/:day_id/:restaurants/:restaurant_id", function(req, res) {
