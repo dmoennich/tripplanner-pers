@@ -34,19 +34,19 @@ router.post("/newday", function(req, res) {
 	// add a new day
 	var day = new Day(req.body);
 	day.save()
-	.then(function (newDay) {
-		res.json(newDay);
-		return newDay;
-	})
-	.then(function(newDay) {
+	.then(function(newday) {
 		return Day.find({});
 	})
 	.then(function(arr) {
-		// console.log(arr);
+		var promiseArray = [];
 		arr.forEach(function(entry, index) {
 			entry.number = index + 1;
-			// console.log(entry.number);
+			promiseArray.push(entry.save());
 		});
+		return Promise.all(promiseArray);
+	})
+	.then(function(proms) {
+		res.json([proms.length-1]);
 	})
 	.then(null, function (error) {
 		res.status(500);
@@ -58,20 +58,25 @@ router.delete("/:day_id", function(req, res) {
 	// delete day
 	var day_id = req.params.day_id;
 	Day.remove({_id: day_id})
-		.then(function () {
-			res.json({});
-		})
 		.then(function(newDay) {
 			return Day.find({});
 		})
 		.then(function(arr) {
 			arr.forEach(function(entry, index) {
 				entry["number"] = index+1;
-				//console.log(entry);
-				//console.log(entry.number);
 			});
-			// console.log(arr);
 		})
+		.then(function(arr) {
+			var promiseArray = [];
+			arr.forEach(function(entry, index) {
+				entry.number = index + 1;
+				promiseArray.push(entry.save());
+			});
+		return Promise.all(promiseArray);
+	})
+	.then(function(proms) {
+		res.json([proms.length-1]);
+	})
 		.then(null, function (error) {
 			res.status(500);
 			res.json(error);
