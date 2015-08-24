@@ -2,9 +2,12 @@ var express = require('express');
 var morgan = require('morgan');
 var bodyParser = require('body-parser');
 var swig = require('swig');
-var sassMiddleware = require('node-sass-middleware'); 
+var sassMiddleware = require('node-sass-middleware');
+
 
 var app = express();
+
+module.exports = app;
 
 // set up rendering with swig
 app.set('views', __dirname + '/views');
