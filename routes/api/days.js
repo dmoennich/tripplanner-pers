@@ -4,11 +4,10 @@ var router = express.Router();
 var Day = require("../../models/day");
 
 
-
 router.get("/alldays", function(req, res) {
 	// get all days
 	Day.find({})
-		.populate("restaurants")
+		.populate([{path: "restaurants"}, {path: "activities"}, {path: "hotel"}])
 		.then( function (day) {
 			res.json(day);
 		})
@@ -32,15 +31,27 @@ router.get("/:day_id", function(req, res) {
 });
 
 router.post("/newday", function(req, res) {
+	// add a new day
 	var day = new Day(req.body);
 	day.save()
-		.then(function (newDay) {
-			res.json(newDay);
-		})
-		.then(null, function (error) {
-			res.status(500);
-			res.json(error);
+	.then(function (newDay) {
+		res.json(newDay);
+		return newDay;
+	})
+	.then(function(newDay) {
+		return Day.find({});
+	})
+	.then(function(arr) {
+		// console.log(arr);
+		arr.forEach(function(entry, index) {
+			entry.number = index + 1;
+			// console.log(entry.number);
 		});
+	})
+	.then(null, function (error) {
+		res.status(500);
+		res.json(error);
+	})
 });
 
 router.delete("/:day_id", function(req, res) {
@@ -49,6 +60,17 @@ router.delete("/:day_id", function(req, res) {
 	Day.remove({_id: day_id})
 		.then(function () {
 			res.json({});
+		})
+		.then(function(newDay) {
+			return Day.find({});
+		})
+		.then(function(arr) {
+			arr.forEach(function(entry, index) {
+				entry["number"] = index+1;
+				//console.log(entry);
+				//console.log(entry.number);
+			});
+			// console.log(arr);
 		})
 		.then(null, function (error) {
 			res.status(500);
