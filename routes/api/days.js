@@ -58,21 +58,24 @@ router.delete("/:day_id", function(req, res) {
 	// delete day
 	var day_id = req.params.day_id;
 	Day.remove({_id: day_id})
-		.then(function(newDay) {
-			return Day.find({});
-		})
-		.then(function(arr) {
-			arr.forEach(function(entry, index) {
-				entry["number"] = index+1;
-			});
-		})
-		.then(function(arr) {
-			var promiseArray = [];
-			arr.forEach(function(entry, index) {
-				entry.number = index + 1;
-				promiseArray.push(entry.save());
-			});
+	.then(function(newday) {
+		return Day.find({});
+	})
+	.then(function(arr) {
+		var promiseArray = [];
+		arr.forEach(function(entry, index) {
+			entry.number = index + 1;
+			promiseArray.push(entry.save());
+		});
 		return Promise.all(promiseArray);
+	})
+	.then(function(arr) {
+		var promiseArray = [];
+		arr.forEach(function(entry, index) {
+			entry.number = index + 1;
+			promiseArray.push(entry.save());
+		});
+	return Promise.all(promiseArray);
 	})
 	.then(function(proms) {
 		res.json([proms.length-1]);
