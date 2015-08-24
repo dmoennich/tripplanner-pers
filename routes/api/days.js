@@ -129,17 +129,17 @@ router.delete("/:day_id/restaurants/:restaurant_id", function(req, res) {
 
 });
 
-router.post("/:day_id/:activities/:activity_id", function(req, res) {
+router.post("/:day_id/activities/:activity_id", function(req, res) {
 	// add activity
 	var day_id = req.params.day_id;
 	var activity_id = req.params.activity_id;
 	
 	Day.findOne({_id: day_id})
 		.then(function (day) {
-			if (day.restaurants.indexOf(restaurant_id) === -1) {
+			if (day.activities.indexOf(activity_id) === -1) {
 				day.activities.push(activity_id);
-				return day.save();
 			}
+			return day.save();
 		})
 		.then(function (savedDay) {
 			res.json(savedDay);
@@ -150,7 +150,7 @@ router.post("/:day_id/:activities/:activity_id", function(req, res) {
 		});
 });
 
-router.delete("/:day_id/:activities/:activity_id", function(req, res) {
+router.delete("/:day_id/activities/:activity_id", function(req, res) {
 	// delete activity
 	var day_id = req.params.day_id;
 	var activity_id = req.params.activity_id;
@@ -172,7 +172,7 @@ router.delete("/:day_id/:activities/:activity_id", function(req, res) {
 		});
 });
 
-router.post("/:day_id/:hotels/:hotel_id", function(req, res) {
+router.post("/:day_id/hotels/:hotel_id", function(req, res) {
 	// add hotel
 	var day_id = req.params.day_id;
 	var hotel_id = req.params.hotel_id;
@@ -192,7 +192,7 @@ router.post("/:day_id/:hotels/:hotel_id", function(req, res) {
 
 });
 
-router.delete("/:day_id/:hotels/:hotel_id", function(req, res) {
+router.delete("/:day_id/hotels/:hotel_id", function(req, res) {
 	// delete hotel
 	var day_id = req.params.day_id;
 	var hotel_id = req.params.hotel_id;
