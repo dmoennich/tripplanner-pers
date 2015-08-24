@@ -7,11 +7,27 @@ var Day = require("../../models/day");
 
 router.get("/alldays", function(req, res) {
 	// get all days
+	Day.find({})
+		.then( function (day) {
+			res.json(day);
+		})
+		.then(null, function (error) {
+			res.status(500);
+			res.json(error);
+		});
 });
 
 router.get("/:day_id", function(req, res) {
 	// get one day
 	var day_id = req.params.day_id;
+	Day.findOne({_id: day_id})
+		.then( function (day) {
+			res.json(day);
+		})
+		.then(null, function (error) {
+			res.status(500);
+			res.json(error);
+		});
 });
 
 router.post("/newday", function(req, res) {
@@ -39,13 +55,26 @@ router.delete("/:day_id", function(req, res) {
 		});
 });
 
-router.post("/:day_id/:restaurants/:restaurant_id", function(req, res) {
+router.post("/:day_id/restaurants/:restaurant_id", function(req, res) {
 	// add restaurant
 	var restaurant_id = req.params.restaurant_id;
-	res.send();
+	var day_id = req.params.day_id;
+	
+	Day.findOne({_id: day_id})
+		.then(function (day) {
+			day.restaurants.push(restaurant_id);
+			return day.save();
+		})
+		.then(function (savedDay) {
+			res.json(savedDay);
+		})
+		.then(null, function (error) {
+			res.status(500);
+			res.json(error);
+		});
 });
 
-router.delete("/:day_id/:restaurants/:restaurant_id", function(req, res) {
+router.delete("/:day_id/restaurants/:restaurant_id", function(req, res) {
 	// delete restaurant
 	var restaurant_id = req.params.restaurant_id;
 	res.send();
