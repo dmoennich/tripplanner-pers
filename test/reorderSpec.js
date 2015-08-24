@@ -44,32 +44,33 @@ describe("DELETE api/days/:id", function () {
 	});
 
 
-	it("should remove the day with the given id", function (done) {
-		var dayId = day._id.toString();
-		request(app)
-			.delete("/api/days/" + day._id.toString())
-			.expect(200)
-			.end(function (err, res) {
-				if (err) {
-					return done(err);
-				}
-				// check if gone from DB
-				Day.findOne({_id: dayId})
-				.then(function (theDay) {
-					expect(theDay).to.equal(null);
-					done();
-				})
-				.then(null, function (error) {
-					done(error);
-				});
+	// xit("should remove the day with the given id", function (done) {
+	// 	var dayId = day._id.toString();
+	// 	request(app)
+	// 		.delete("/api/days/" + day._id.toString())
+	// 		.expect(200)
+	// 		.end(function (err, res) {
+	// 			if (err) {
+	// 				return done(err);
+	// 			}
+	// 			// check if gone from DB
+	// 			Day.findOne({_id: dayId})
+	// 			.then(function (theDay) {
+	// 				expect(theDay).to.equal(null);
+	// 				done();
+	// 			})
+	// 			.then(null, function (error) {
+	// 				done(error);
+	// 			});
 				
-			});
-	});
+	// 		});
+	// });
 
 
 
 
 	it("should remove the day with the given id and reorder the numbers of the left days", function (done) {
+		console.log("first day:", JSON.stringify(Object.keys(day), null, 4));
 		request(app)
 			.delete("/api/days/" + middleDay._id.toString())
 			.expect(200)
