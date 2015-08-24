@@ -52,9 +52,17 @@ var daysModule = (function(){
   }
 
   exports.addAttraction = function(attraction) {
+    console.log("Attraction:", currentDay);
     if (currentDay[attraction.type].indexOf(attraction) !== -1) return;
-    currentDay[attraction.type].push(attraction);
-    renderDay(currentDay);
+
+    days_api.addAttraction(attraction.type, currentDay._id, attraction._id, function () {
+      currentDay[attraction.type].push(attraction);
+      renderDay(currentDay);
+      console.log("Attraction added");
+    }, function (error) {
+      console.log("ERROR adding Attraction:", error);
+    });
+  
   };
 
   exports.removeAttraction = function (attraction) {
@@ -67,19 +75,33 @@ var daysModule = (function(){
   function renderDay(day) {
     mapModule.eraseMarkers();
     day = day || currentDay;
-    Object.keys(day).forEach(function(type){
+
+    var attractions = ["hotels", "restaurants", "activities"];
+
+    attractions.forEach(function(type){
       var $list = $('#itinerary ul[data-type="' + type + '"]');
       $list.empty();
-      day[type].forEach(function(attraction){
-        $list.append(itineraryHTML(attraction));
-        mapModule.drawAttraction(attraction);
-      });
+      if (day[type]) {
+        day[type].forEach(function(attraction){
+          $list.append(itineraryHTML(attraction));
+          mapModule.drawAttraction(attraction);
+        });
+      }
     });
   }
 
   function itineraryHTML (attraction) {
     return '<div class="itinerary-item><span class="title>' + attraction.name + '</span><button data-id="' + attraction._id + '" data-type="' + attraction.type + '" class="btn btn-xs btn-danger remove btn-circle">x</button></div>';
   }
+
+
+  var initDays = function (daysFromDb) {
+    days = daysFromDb;
+    currentDay = days[0];
+    renderDay(currentDay);
+  };
+
+
 
   $(document).ready(function(){
     switchDay(0);
@@ -88,6 +110,14 @@ var daysModule = (function(){
       switchDay($(this).index());
     });
     $('#day-title').on('click', '.remove', removeCurrentDay);
+
+
+    // load all days
+    days_api.getAllDays(initDays, function (error) {
+      console.log("ERROR:", error);
+    });
+
+
   });
 
   return exports;

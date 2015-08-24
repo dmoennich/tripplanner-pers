@@ -76,6 +76,7 @@ describe("DELETE api/days/:id", function () {
 			.expect(200)
 			.end(function (err, res) {
 				if (err) {
+					console.error(JSON.stringify(err, null, 4));
 					return done(err);
 				}
 				// check if gone from DB

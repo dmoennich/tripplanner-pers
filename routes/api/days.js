@@ -7,7 +7,7 @@ var Day = require("../../models/day");
 router.get("/alldays", function(req, res) {
 	// get all days
 	Day.find({})
-		.populate([{path: "restaurants"}, {path: "activities"}, {path: "hotel"}])
+		.populate([{path: "restaurants"}, {path: "activities"}, {path: "hotels"}])
 		.then( function (day) {
 			res.json(day);
 		})
@@ -129,28 +129,31 @@ router.delete("/:day_id/restaurants/:restaurant_id", function(req, res) {
 
 });
 
-router.post("/:day_id/:activities/:activity_id", function(req, res) {
+router.post("/:day_id/activities/:activity_id", function(req, res) {
+	console.log("new activitiy");
 	// add activity
 	var day_id = req.params.day_id;
 	var activity_id = req.params.activity_id;
 	
 	Day.findOne({_id: day_id})
 		.then(function (day) {
-			if (day.restaurants.indexOf(restaurant_id) === -1) {
+			if (day.activities.indexOf(activity_id) === -1) {
 				day.activities.push(activity_id);
 				return day.save();
 			}
+			return day;
 		})
 		.then(function (savedDay) {
 			res.json(savedDay);
 		})
 		.then(null, function (error) {
-			res.status(500);
+			console.log("error:", JSON.stringify(error, null, 4));
+			res.status(501);
 			res.json(error);
 		});
 });
 
-router.delete("/:day_id/:activities/:activity_id", function(req, res) {
+router.delete("/:day_id/activities/:activity_id", function(req, res) {
 	// delete activity
 	var day_id = req.params.day_id;
 	var activity_id = req.params.activity_id;
@@ -172,34 +175,38 @@ router.delete("/:day_id/:activities/:activity_id", function(req, res) {
 		});
 });
 
-router.post("/:day_id/:hotels/:hotel_id", function(req, res) {
-	// add hotel
+router.post("/:day_id/hotels/:hotel_id", function(req, res) {
 	var day_id = req.params.day_id;
 	var hotel_id = req.params.hotel_id;
 	
 	Day.findOne({_id: day_id})
 		.then(function (day) {
-			day.hotel = hotel_id;
+			day.hotels.pop();
+			day.hotels.push(hotel_id);
+			console.log("day.hotels", day.hotels);
 			return day.save();
 		})
 		.then(function (savedDay) {
 			res.json(savedDay);
 		})
 		.then(null, function (error) {
-			res.status(500);
+			console.log("error:", JSON.stringify(error, null, 4));
+			res.status(501);
 			res.json(error);
 		});
-
 });
 
-router.delete("/:day_id/:hotels/:hotel_id", function(req, res) {
-	// delete hotel
+router.delete("/:day_id/hotels/:hotel_id", function(req, res) {
 	var day_id = req.params.day_id;
 	var hotel_id = req.params.hotel_id;
 
 	Day.findOne({_id: day_id})
 		.then(function (day) {
-			day.hotel = undefined;
+			var index = day.hotels.indexOf(hotel_id);
+			if (index !== -1){
+				//day.hotel = [];
+				day.hotels.splice(index, 1);
+			}
 			return day.save();
 		})
 		.then(function(updatedDay){
