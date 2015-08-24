@@ -130,7 +130,7 @@ router.delete("/:day_id/restaurants/:restaurant_id", function(req, res) {
 });
 
 router.post("/:day_id/activities/:activity_id", function(req, res) {
-	console.log("new activitiy");
+
 	// add activity
 	var day_id = req.params.day_id;
 	var activity_id = req.params.activity_id;
@@ -139,9 +139,8 @@ router.post("/:day_id/activities/:activity_id", function(req, res) {
 		.then(function (day) {
 			if (day.activities.indexOf(activity_id) === -1) {
 				day.activities.push(activity_id);
-				return day.save();
 			}
-			return day;
+			return day.save();
 		})
 		.then(function (savedDay) {
 			res.json(savedDay);
