@@ -76,28 +76,106 @@ router.post("/:day_id/restaurants/:restaurant_id", function(req, res) {
 
 router.delete("/:day_id/restaurants/:restaurant_id", function(req, res) {
 	// delete restaurant
+	var day_id = req.params.day_id;
 	var restaurant_id = req.params.restaurant_id;
-	res.send();
+
+	Day.findOne({_id: day_id})
+		.then(function (day) {
+			var index = day.restaurants.indexOf(restaurant_id);
+			if (index !== -1){
+				day.restaurants.splice(index, 1);
+			}
+			return day.save();
+		})
+		.then(function(updatedDay){
+			res.json(updatedDay);
+		})
+		.then(null, function (error) {
+			res.status(500);
+			res.json(error);
+		});
+
 });
 
 router.post("/:day_id/:activities/:activity_id", function(req, res) {
 	// add activity
+	var day_id = req.params.day_id;
 	var activity_id = req.params.activity_id;
+	
+	Day.findOne({_id: day_id})
+		.then(function (day) {
+			day.activities.push(activity_id);
+			return day.save();
+		})
+		.then(function (savedDay) {
+			res.json(savedDay);
+		})
+		.then(null, function (error) {
+			res.status(500);
+			res.json(error);
+		});
 });
 
 router.delete("/:day_id/:activities/:activity_id", function(req, res) {
 	// delete activity
+	var day_id = req.params.day_id;
 	var activity_id = req.params.activity_id;
+
+	Day.findOne({_id: day_id})
+		.then(function (day) {
+			var index = day.activities.indexOf(activity_id);
+			if (index !== -1){
+				day.activities.splice(index, 1);
+			}
+			return day.save();
+		})
+		.then(function(updatedDay){
+			res.json(updatedDay);
+		})
+		.then(null, function (error) {
+			res.status(500);
+			res.json(error);
+		});
 });
 
 router.post("/:day_id/:hotels/:hotel_id", function(req, res) {
 	// add hotel
+	var day_id = req.params.day_id;
 	var hotel_id = req.params.hotel_id;
+	
+	Day.findOne({_id: day_id})
+		.then(function (day) {
+			day.hotel = hotel_id;
+			return day.save();
+		})
+		.then(function (savedDay) {
+			res.json(savedDay);
+		})
+		.then(null, function (error) {
+			res.status(500);
+			res.json(error);
+		});
+
 });
 
 router.delete("/:day_id/:hotels/:hotel_id", function(req, res) {
 	// delete hotel
+	var day_id = req.params.day_id;
 	var hotel_id = req.params.hotel_id;
+
+	Day.findOne({_id: day_id})
+		.then(function (day) {
+			day.hotel = undefined;
+			return day.save();
+		})
+		.then(function(updatedDay){
+			res.json(updatedDay);
+		})
+		.then(null, function (error) {
+			res.status(500);
+			res.json(error);
+		});
+
 });
 
 module.exports = router;
