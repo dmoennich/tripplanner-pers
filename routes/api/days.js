@@ -8,6 +8,7 @@ var Day = require("../../models/day");
 router.get("/alldays", function(req, res) {
 	// get all days
 	Day.find({})
+		.populate("restaurants")
 		.then( function (day) {
 			res.json(day);
 		})
@@ -62,8 +63,9 @@ router.post("/:day_id/restaurants/:restaurant_id", function(req, res) {
 	
 	Day.findOne({_id: day_id})
 		.then(function (day) {
+			if (day.restaurants.indexOf(restaurant_id) === -1) {
 			day.restaurants.push(restaurant_id);
-			return day.save();
+			return day.save();			}
 		})
 		.then(function (savedDay) {
 			res.json(savedDay);
@@ -104,8 +106,10 @@ router.post("/:day_id/:activities/:activity_id", function(req, res) {
 	
 	Day.findOne({_id: day_id})
 		.then(function (day) {
-			day.activities.push(activity_id);
-			return day.save();
+			if (day.restaurants.indexOf(restaurant_id) === -1) {
+				day.activities.push(activity_id);
+				return day.save();
+			}
 		})
 		.then(function (savedDay) {
 			res.json(savedDay);
