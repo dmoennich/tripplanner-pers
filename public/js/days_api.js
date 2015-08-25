@@ -21,6 +21,15 @@ var days_api = (function () {
 		});
 	};
 
+	exports.removeAttraction = function (attractionType, dayId, attractionId, callback, errorHandler) {
+		$.ajax({
+			method: "DELETE",
+			url: "/api/days/" + dayId + "/" + attractionType + "/" + attractionId,
+			success: callback,
+			error: errorHandler
+		});
+	};
+
 	exports.createNewDay = function (dayNumber, callback, errorHandler) {
 		$.ajax({
 			method: "POST",

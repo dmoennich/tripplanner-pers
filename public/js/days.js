@@ -77,16 +77,26 @@ var daysModule = (function(){
       renderDay(currentDay);
       console.log("Attraction added");
     }, function (error) {
-      console.log("ERROR adding Attraction:", error);
+      console.log("Error occured adding attraction: ", error);
     });
   
   };
 
   exports.removeAttraction = function (attraction) {
-    var index = currentDay[attraction.type].indexOf(attraction);
-    if (index === -1) return;
-    currentDay[attraction.type].splice(index, 1);
-    renderDay(currentDay);
+    console.log("current day ", currentDay);
+    console.log("currentday[attraction.type] ", currentDay[attraction.type]);
+
+    currentDay[attraction.type].forEach(function(elem, index){
+      if (elem._id = attraction._id){
+        days_api.removeAttraction(attraction.type, currentDay._id, attraction._id, function() {
+          currentDay[attraction.type].splice(index, 1);
+          renderDay(currentDay);
+          console.log("Attraction deleted");
+        }, function(error) {
+          console.log("Error occured removing attraction: ", error);
+        });
+        };
+    });
   };
 
   function renderDay(day) {
@@ -100,6 +110,7 @@ var daysModule = (function(){
       $list.empty();
       if (day[type]) {
         day[type].forEach(function(attraction){
+          attraction.type = type;
           $list.append(itineraryHTML(attraction));
           mapModule.drawAttraction(attraction);
         });
