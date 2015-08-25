@@ -42,8 +42,13 @@ var daysModule = (function(){
   function removeCurrentDay () {
     if (days.length === 1) return;
     var index = days.indexOf(currentDay);
-    days.splice(index, 1);
-    switchDay(index);
+    var dayId = currentDay._id.toString();
+    days_api.removeDay(dayId, function () {
+      days.splice(index, 1);
+      switchDay(index);
+    }, function (error) {
+      console.log("Error:", error);
+    });
   }
 
   function renderDayButtons () {
@@ -60,11 +65,12 @@ var daysModule = (function(){
   }
 
   exports.addAttraction = function(attraction) {
-    console.log("currentDay:", JSON.stringify(currentDay));
-    console.log("currentDay:", JSON.stringify(currentDay.length));
-    console.log("Attraction type:", attraction.type);
-    console.log("Attraction:", attraction);
     if (currentDay[attraction.type].indexOf(attraction) !== -1) return;
+
+    // remove current hotel
+    if(attraction.type === "hotels" && currentDay.hotels.length > 0) {
+      currentDay.hotels.pop();
+    }
 
     days_api.addAttraction(attraction.type, currentDay._id, attraction._id, function () {
       currentDay[attraction.type].push(attraction);

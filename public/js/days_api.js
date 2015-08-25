@@ -31,6 +31,16 @@ var days_api = (function () {
 		});
 	};
 
+
+	exports.removeDay = function (dayId, callback, errorHandler) {
+		$.ajax({
+			method: "DELETE",
+			url: "/api/days/" + dayId,
+			success: callback,
+			error: errorHandler
+		});
+	};
+
 	return exports;
 
 })();
