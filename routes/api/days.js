@@ -46,12 +46,12 @@ router.post("/newday", function(req, res) {
 		return Promise.all(promiseArray);
 	})
 	.then(function(proms) {
-		res.json([proms.length-1]);
+		res.json(proms[proms.length - 1]);
 	})
 	.then(null, function (error) {
 		res.status(500);
 		res.json(error);
-	})
+	});
 });
 
 router.delete("/:day_id", function(req, res) {

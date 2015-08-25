@@ -12,13 +12,21 @@ var daysModule = (function(){
       currentDay = days[0];
 
   function addDay () {
-    days.push({
-      hotels: [],
-      restaurants: [],
-      activities: []
-    });
-    renderDayButtons();
-    switchDay(days.length - 1);
+
+    var dayNumber = days.length + 1;
+
+
+    days_api.createNewDay(dayNumber, function (newDay) {
+      days.push(newDay);
+      //renderDayButtons();
+      switchDay(days.length - 1);
+    }, function (error) {console.log("ERROR creating page:", error);});
+
+    // days.push({
+    //   hotels: [],
+    //   restaurants: [],
+    //   activities: []
+    // });
   }
 
   function switchDay (index) {
@@ -52,7 +60,10 @@ var daysModule = (function(){
   }
 
   exports.addAttraction = function(attraction) {
-    console.log("Attraction:", currentDay);
+    console.log("currentDay:", JSON.stringify(currentDay));
+    console.log("currentDay:", JSON.stringify(currentDay.length));
+    console.log("Attraction type:", attraction.type);
+    console.log("Attraction:", attraction);
     if (currentDay[attraction.type].indexOf(attraction) !== -1) return;
 
     days_api.addAttraction(attraction.type, currentDay._id, attraction._id, function () {
@@ -96,8 +107,18 @@ var daysModule = (function(){
 
 
   var initDays = function (daysFromDb) {
-    days = daysFromDb;
-    currentDay = days[0];
+
+    if (daysFromDb.length === 0) {
+      // create new day
+      days_api.createNewDay(1, function (newDay) {
+        days.push(newDay);
+        currentDay = newDay;
+      }, function (error) {console.log("ERROR creating page:", error);});
+    } else {
+      days = daysFromDb;
+      currentDay = days[0];
+    }
+    renderDayButtons();
     renderDay(currentDay);
   };
 

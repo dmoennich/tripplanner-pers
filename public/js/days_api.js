@@ -21,6 +21,16 @@ var days_api = (function () {
 		});
 	};
 
+	exports.createNewDay = function (dayNumber, callback, errorHandler) {
+		$.ajax({
+			method: "POST",
+			url: "/api/days/newday",
+			data: {number: dayNumber},
+			success: callback,
+			error: errorHandler
+		});
+	};
+
 	return exports;
 
 })();
